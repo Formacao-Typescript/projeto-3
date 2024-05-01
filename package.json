@@ -9,7 +9,7 @@
     "start": "node --env-file=.env dist/app.js",
     "dev": "tsx watch src/app.ts",
     "build": "tsc",
-    "test": "NODE_ENV='test' tsx --test --experimental-test-coverage './src/**/*.test.*'"
+    "test": "NODE_ENV='test' tsx --no-warnings=ExperimentalWarnings --test --experimental-test-coverage './src/**/*.test.*'"
   },
   "engines": {
     "node": ">=20"
