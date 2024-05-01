@@ -1,7 +1,7 @@
 {
-  "name": "projeto-1",
+  "name": "projeto-3",
   "version": "0.0.1",
-  "description": "Repositório de resposta do primeiro projeto da formação TS",
+  "description": "Repositório de resposta do terceiro projeto da formação TS",
   "main": "dist/app.js",
   "type": "module",
   "scripts": {
