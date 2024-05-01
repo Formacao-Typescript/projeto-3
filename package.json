@@ -1,14 +1,15 @@
 {
-  "name": "projeto-1",
+  "name": "projeto-3",
   "version": "0.0.1",
-  "description": "Repositório de resposta do primeiro projeto da formação TS",
+  "description": "Repositório de resposta do terceiro projeto da formação TS",
   "main": "dist/app.js",
   "type": "module",
   "scripts": {
     "prestart": "npm run build",
     "start": "node --env-file=.env dist/app.js",
     "dev": "tsx watch src/app.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "NODE_ENV='test' tsx --test --experimental-test-coverage './src/**/*.test.*'"
   },
   "engines": {
     "node": ">=20"
