@@ -16,7 +16,10 @@ export abstract class Database {
 
   // FIXME: Como melhorar?
   constructor(entity: SerializableStatic) {
-    this.dbPath = resolve(dirname(fileURLToPath(import.meta.url)), `.data/${entity.name.toLowerCase()}.json`)
+    // Para testar o ideal é que tenhamos um container de testes
+    // mas como nosso banco de dados é local, vamos usar um arquivo separado
+    const prefix = process.env.NODE_ENV === 'test' ? '-test' : ''
+    this.dbPath = resolve(dirname(fileURLToPath(import.meta.url)), `.data/${entity.name.toLowerCase()}${prefix}.json`)
     this.dbEntity = entity
     this.#initialize()
   }
