@@ -25,6 +25,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "axiosist": "^1.1.0",
     "express": "^4.18.2",
     "helmet": "^7.0.0",
     "zod": "^3.22.4"
