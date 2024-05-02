@@ -7,6 +7,7 @@ import { classRouterFactory } from './class.js'
 import { parentRouterFactory } from './parent.js'
 import { studentRouterFactory } from './student.js'
 import { teacherRouterFactory } from './teacher.js'
+import { errorHandler } from './middlewares/errorHandler.js'
 
 // ServiceList aqui pode ser um index type como [key: string]: Service<any, any>
 // Como podemos deixar ele específico e mais seguro? Temos que pegar o retorno da função initDependencies
@@ -20,14 +21,7 @@ export async function WebLayer(config: AppConfig, services: ServiceList) {
   app.use('/parents', parentRouterFactory(services.parent, services.student))
   app.use('/students', studentRouterFactory(services.student, services.class))
   app.get('/ping', (_, res) => res.send('pong'))
-  app.use(async (err: any, _: Request, res: Response, next: NextFunction) => {
-    if (err) {
-      return res
-        .status(err?.status ?? 500)
-        .json({ code: err?.code ?? 'UNKNOWN_ERROR', message: err.message, name: err.name })
-    }
-    next()
-  })
+  app.use(errorHandler)
 
   const start = async () => {
     console.debug('Starting web layer')
