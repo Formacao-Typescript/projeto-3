@@ -12,12 +12,12 @@ import { TeacherService } from './TeacherService.js'
 
 describe('ClassService', () => {
   // #region Mocks
-  const TeacherServiceMock = (mockReturn: { findById?: any }, t: any) =>
+  const TeacherServiceMock = (t: any, mockReturn: { findById?: any } = {}) =>
     ({
       findById: t.mock.fn((id: string) => mockReturn['findById'] ?? dummyTeacher({ id }))
     } as { findById: Mock<(id: string) => Teacher> })
 
-  const StudentServiceMock = (mockReturn: { listBy?: any }, t: any) =>
+  const StudentServiceMock = (t: any, mockReturn: { listBy?: any } = {}) =>
     ({
       listBy: t.mock.fn((_prop: string, _value: any) => mockReturn['listBy'] ?? [dummyStudent({ id: _value })])
     } as any)
@@ -25,44 +25,38 @@ describe('ClassService', () => {
 
   describe('creation', () => {
     it('should create a class', (t) => {
-      const DBMock = dummyDatabase(
-        {
-          listBy: []
-        },
-        t
-      )
-      const teacherService = TeacherServiceMock({}, t)
-      const studentService = StudentServiceMock({}, t)
+      const DBMock = dummyDatabase(t, {
+        listBy: []
+      })
+      const teacherService = TeacherServiceMock(t)
+      const studentService = StudentServiceMock(t)
       const service = new ClassService(DBMock, teacherService as unknown as TeacherService, studentService)
-      assert.doesNotThrow(() => service.create(dummyClass({ id: classId }).toObject()))
+      assert.doesNotThrow(() => service.create(dummyClass().toObject()))
       assert.strictEqual(DBMock.save.mock.callCount(), 1)
       assert.strictEqual(teacherService.findById.mock.callCount(), 1)
     })
 
     it('should throw conflict if class already exists', (t) => {
-      const DBMock = dummyDatabase({}, t)
-      const teacherService = TeacherServiceMock({}, t)
-      const studentService = StudentServiceMock({}, t)
+      const DBMock = dummyDatabase(t)
+      const teacherService = TeacherServiceMock(t)
+      const studentService = StudentServiceMock(t)
       const service = new ClassService(DBMock, teacherService as unknown as TeacherService, studentService)
-      assert.throws(() => service.create(dummyClass({ id: classId }).toObject()), ConflictError)
+      assert.throws(() => service.create(dummyClass().toObject()), ConflictError)
       assert.strictEqual(DBMock.save.mock.callCount(), 0)
       assert.strictEqual(teacherService.findById.mock.callCount(), 0)
     })
 
     it('should throw not found if teacher does not exists', (t) => {
-      const DBMock = dummyDatabase(
-        {
-          listBy: []
-        },
-        t
-      )
-      const teacherService = TeacherServiceMock({}, t)
+      const DBMock = dummyDatabase(t, {
+        listBy: []
+      })
+      const teacherService = TeacherServiceMock(t)
       teacherService.findById.mock.mockImplementationOnce(() => {
         throw new NotFoundError(teacherId, Teacher)
       })
-      const studentService = StudentServiceMock({}, t)
+      const studentService = StudentServiceMock(t)
       const service = new ClassService(DBMock, teacherService as unknown as TeacherService, studentService)
-      assert.throws(() => service.create(dummyClass({ id: classId }).toObject()), NotFoundError)
+      assert.throws(() => service.create(dummyClass().toObject()), NotFoundError)
       assert.strictEqual(DBMock.save.mock.callCount(), 0)
       assert.strictEqual(teacherService.findById.mock.callCount(), 1)
     })
@@ -70,9 +64,9 @@ describe('ClassService', () => {
 
   describe('update', () => {
     it('should update a class without checking for teacher', (t) => {
-      const DBMock = dummyDatabase({}, t)
-      const teacherService = TeacherServiceMock({}, t)
-      const studentService = StudentServiceMock({}, t)
+      const DBMock = dummyDatabase(t)
+      const teacherService = TeacherServiceMock(t)
+      const studentService = StudentServiceMock(t)
       const service = new ClassService(DBMock, teacherService as unknown as TeacherService, studentService)
       const result = service.update(classId, { code: '1C-T' })
       assert.deepStrictEqual(result.code, '1C-T')
@@ -82,9 +76,9 @@ describe('ClassService', () => {
     })
 
     it('should update a class checking for teacher', (t) => {
-      const DBMock = dummyDatabase({}, t)
-      const teacherService = TeacherServiceMock({}, t)
-      const studentService = StudentServiceMock({}, t)
+      const DBMock = dummyDatabase(t)
+      const teacherService = TeacherServiceMock(t)
+      const studentService = StudentServiceMock(t)
       const service = new ClassService(DBMock, teacherService as unknown as TeacherService, studentService)
       const newTeacherID = randomUUID()
       const result = service.update(classId, { code: '1C-T', teacher: newTeacherID })
@@ -96,17 +90,14 @@ describe('ClassService', () => {
     })
 
     it('should throw not found if teacher does not exists', (t) => {
-      const DBMock = dummyDatabase(
-        {
-          listBy: []
-        },
-        t
-      )
-      const teacherService = TeacherServiceMock({}, t)
+      const DBMock = dummyDatabase(t, {
+        listBy: []
+      })
+      const teacherService = TeacherServiceMock(t)
       teacherService.findById.mock.mockImplementationOnce(() => {
         throw new NotFoundError(teacherId, Teacher)
       })
-      const studentService = StudentServiceMock({}, t)
+      const studentService = StudentServiceMock(t)
       const service = new ClassService(DBMock, teacherService as unknown as TeacherService, studentService)
       const newTeacherID = randomUUID()
       assert.throws(() => service.update(classId, { code: '1C-T', teacher: newTeacherID }), NotFoundError)
@@ -118,14 +109,11 @@ describe('ClassService', () => {
 
   describe('removal', () => {
     it('should remove a class', (t) => {
-      const DBMock = dummyDatabase({}, t)
-      const teacherService = TeacherServiceMock({}, t)
-      const studentService = StudentServiceMock(
-        {
-          listBy: []
-        },
-        t
-      )
+      const DBMock = dummyDatabase(t)
+      const teacherService = TeacherServiceMock(t)
+      const studentService = StudentServiceMock(t, {
+        listBy: []
+      })
       const service = new ClassService(DBMock, teacherService as unknown as TeacherService, studentService)
       assert.doesNotThrow(() => service.remove(classId))
       assert.strictEqual(DBMock.remove.mock.callCount(), 1)
@@ -133,9 +121,9 @@ describe('ClassService', () => {
     })
 
     it('should throw dependency conflict if students are in class', (t) => {
-      const DBMock = dummyDatabase({}, t)
-      const teacherService = TeacherServiceMock({}, t)
-      const studentService = StudentServiceMock({}, t)
+      const DBMock = dummyDatabase(t)
+      const teacherService = TeacherServiceMock(t)
+      const studentService = StudentServiceMock(t)
       const service = new ClassService(DBMock, teacherService as unknown as TeacherService, studentService)
       assert.throws(() => service.remove(classId), DependencyConflictError)
       assert.strictEqual(DBMock.remove.mock.callCount(), 0)
@@ -144,9 +132,9 @@ describe('ClassService', () => {
 
   describe('getTeacher', () => {
     it('should get teacher of a class', (t) => {
-      const DBMock = dummyDatabase({}, t)
-      const teacherService = TeacherServiceMock({}, t)
-      const studentService = StudentServiceMock({}, t)
+      const DBMock = dummyDatabase(t)
+      const teacherService = TeacherServiceMock(t)
+      const studentService = StudentServiceMock(t)
       const service = new ClassService(DBMock, teacherService as unknown as TeacherService, studentService)
       const result = service.getTeacher(classId)
       assert.deepStrictEqual(result.id, teacherId)
@@ -155,12 +143,12 @@ describe('ClassService', () => {
     })
 
     it('should throw not found if teacher does not exists', (t) => {
-      const DBMock = dummyDatabase({}, t)
-      const teacherService = TeacherServiceMock({}, t)
+      const DBMock = dummyDatabase(t)
+      const teacherService = TeacherServiceMock(t)
       teacherService.findById.mock.mockImplementationOnce(() => {
         throw new NotFoundError(teacherId, Teacher)
       })
-      const studentService = StudentServiceMock({}, t)
+      const studentService = StudentServiceMock(t)
       const service = new ClassService(DBMock, teacherService as unknown as TeacherService, studentService)
       assert.throws(() => service.getTeacher(classId), NotFoundError)
       assert.strictEqual(DBMock.findById.mock.callCount(), 1)
@@ -168,14 +156,11 @@ describe('ClassService', () => {
     })
 
     it('should throw missing dependency if class has no teachers', (t) => {
-      const DBMock = dummyDatabase(
-        {
-          findById: dummyClass({ id: classId, teacher: null })
-        },
-        t
-      )
-      const teacherService = TeacherServiceMock({}, t)
-      const studentService = StudentServiceMock({}, t)
+      const DBMock = dummyDatabase(t, {
+        findById: dummyClass({ id: classId, teacher: null })
+      })
+      const teacherService = TeacherServiceMock(t)
+      const studentService = StudentServiceMock(t)
       const service = new ClassService(DBMock, teacherService as unknown as TeacherService, studentService)
       assert.throws(() => service.getTeacher(classId), MissingDependencyError)
       assert.strictEqual(DBMock.findById.mock.callCount(), 1)
@@ -185,9 +170,9 @@ describe('ClassService', () => {
 
   describe('getStudents', () => {
     it('should get students of a class', (t) => {
-      const DBMock = dummyDatabase({}, t)
-      const teacherService = TeacherServiceMock({}, t)
-      const studentService = StudentServiceMock({}, t)
+      const DBMock = dummyDatabase(t)
+      const teacherService = TeacherServiceMock(t)
+      const studentService = StudentServiceMock(t)
       const service = new ClassService(DBMock, teacherService as unknown as TeacherService, studentService)
       const result = service.getStudents(classId)
       assert.strictEqual(result.length, 1)
