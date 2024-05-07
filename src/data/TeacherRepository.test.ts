@@ -1,7 +1,7 @@
 import assert from 'node:assert'
 import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { after, before, describe, it } from 'node:test'
+import { afterEach, before, describe, it } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { Teacher } from '../domain/Teacher.js'
 import { unlinkIfExists } from '../utils/unlinkIfExists.js'
@@ -28,7 +28,7 @@ describe('TeacherRepository', () => {
   })
 
   // Depois de cada teste, limpa o arquivo de teste
-  after(() => {
+  afterEach(() => {
     unlinkIfExists(resolve(DB_PATH), DB_FILE_NAME)
   })
 
@@ -49,29 +49,39 @@ describe('TeacherRepository', () => {
 
   it('should list all entities in the database', () => {
     const db = new TeacherRepository()
-    const list = db.list() as Teacher[]
+    const list = db.save(teacher).list() as Teacher[]
     assert.ok(list.length === 1)
     assert.ok(list[0] instanceof Teacher)
   })
 
   it('should find by id', () => {
     const db = new TeacherRepository()
-    const found = db.findById(teacher.id)
+    const found = db.save(teacher).findById(teacher.id)
     assert.ok(found instanceof Teacher)
     assert.deepStrictEqual(found, teacher)
   })
 
   it('should update', () => {
     const db = new TeacherRepository()
-    teacher.firstName = 'Not Lucas'
-    const updated = db.save(teacher).findById(teacher.id)
+    const newTeacher = new Teacher({
+      firstName: 'Lucas',
+      surname: 'Santos',
+      phone: '123456789',
+      email: 'foo@gmail.com',
+      document: '123456789',
+      hiringDate: new Date('2020-10-20').toISOString(),
+      major: 'Computer Science',
+      salary: 5000
+    })
+    newTeacher.firstName = 'Not Lucas'
+    const updated = db.save(newTeacher).findById(newTeacher.id)
     assert.ok(updated instanceof Teacher)
-    assert.deepStrictEqual(updated, teacher)
+    assert.deepStrictEqual(updated, newTeacher)
   })
 
   it('should list by a specific property', () => {
     const db = new TeacherRepository()
-    const list = db.listBy('surname', 'Santos') as Teacher[]
+    const list = db.save(teacher).listBy('surname', 'Santos') as Teacher[]
     assert.ok(list.length === 1)
     assert.ok(list[0] instanceof Teacher)
     assert.deepStrictEqual(list[0], teacher)
@@ -79,6 +89,8 @@ describe('TeacherRepository', () => {
 
   it('should remove from the database', () => {
     const db = new TeacherRepository()
+    db.save(teacher)
+    assert.ok(db.list().length === 1)
     db.remove(teacher.id)
     const list = db.list() as Teacher[]
     assert.ok(list.length === 0)

@@ -1,7 +1,7 @@
 import assert from 'node:assert'
 import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { after, before, describe, it } from 'node:test'
+import { afterEach, before, describe, it } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { Student } from '../domain/Student.js'
 import { unlinkIfExists } from '../utils/unlinkIfExists.js'
@@ -11,7 +11,7 @@ import { randomUUID } from 'node:crypto'
 describe('StudentRepository', () => {
   const DB_PATH = resolve(dirname(fileURLToPath(import.meta.url)), '.data')
   const DB_FILE_NAME = 'student-test.json'
-  const teacher = new Student({
+  const student = new Student({
     firstName: 'Lucas',
     surname: 'Santos',
     birthDate: new Date('1995-01-01').toISOString(),
@@ -29,7 +29,7 @@ describe('StudentRepository', () => {
   })
 
   // Depois de cada teste, limpa o arquivo de teste
-  after(() => {
+  afterEach(() => {
     unlinkIfExists(resolve(DB_PATH), DB_FILE_NAME)
   })
 
@@ -42,45 +42,58 @@ describe('StudentRepository', () => {
   it('should save a new entity in the database', () => {
     const db = new StudentRepository()
 
-    const instance = db.save(teacher)
+    const instance = db.save(student)
     assert.ok(instance instanceof StudentRepository)
     const file = JSON.parse(readFileSync(`${DB_PATH}/${DB_FILE_NAME}`, 'utf-8'))
-    assert.deepStrictEqual(Student.fromObject(file[0][1]), teacher)
+    assert.deepStrictEqual(Student.fromObject(file[0][1]), student)
   })
 
   it('should list all entities in the database', () => {
     const db = new StudentRepository()
-    const list = db.list() as Student[]
+    const list = db.save(student).list() as Student[]
     assert.ok(list.length === 1)
     assert.ok(list[0] instanceof Student)
   })
 
   it('should find by id', () => {
     const db = new StudentRepository()
-    const found = db.findById(teacher.id)
+    const found = db.save(student).findById(student.id)
     assert.ok(found instanceof Student)
-    assert.deepStrictEqual(found, teacher)
+    assert.deepStrictEqual(found, student)
   })
 
   it('should update', () => {
     const db = new StudentRepository()
-    teacher.firstName = 'Not Lucas'
-    const updated = db.save(teacher).findById(teacher.id)
+    const newStudent = new Student({
+      firstName: 'Lucas',
+      surname: 'Santos',
+      birthDate: new Date('1995-01-01').toISOString(),
+      bloodType: 'A+',
+      class: randomUUID(),
+      document: '123456789',
+      parents: [randomUUID()],
+      startDate: new Date('2010-10-10').toISOString()
+    })
+    db.save(newStudent)
+    newStudent.firstName = 'Not Lucas'
+    const updated = db.save(newStudent).findById(newStudent.id)
     assert.ok(updated instanceof Student)
-    assert.deepStrictEqual(updated, teacher)
+    assert.deepStrictEqual(updated, newStudent)
   })
 
   it('should list by a specific property', () => {
     const db = new StudentRepository()
-    const list = db.listBy('surname', 'Santos') as Student[]
+    const list = db.save(student).listBy('surname', 'Santos') as Student[]
     assert.ok(list.length === 1)
     assert.ok(list[0] instanceof Student)
-    assert.deepStrictEqual(list[0], teacher)
+    assert.deepStrictEqual(list[0], student)
   })
 
   it('should remove from the database', () => {
     const db = new StudentRepository()
-    db.remove(teacher.id)
+    db.save(student)
+    assert.ok(db.list().length === 1)
+    db.remove(student.id)
     const list = db.list() as Student[]
     assert.ok(list.length === 0)
   })
