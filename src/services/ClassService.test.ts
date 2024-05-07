@@ -105,6 +105,20 @@ describe('ClassService', () => {
       assert.strictEqual(DBMock.findById.mock.callCount(), 1)
       assert.strictEqual(teacherService.findById.mock.callCount(), 1)
     })
+
+    it('should throw a not found error if class does not exist', (t) => {
+      const DBMock = dummyDatabase(t, dummyClass, {
+          findById: false as any
+      })
+      const teacherService = TeacherServiceMock(t)
+      const studentService = StudentServiceMock(t)
+      const service = new ClassService(DBMock, teacherService as unknown as TeacherService, studentService as unknown as StudentService)
+      
+      assert.throws(() => service.update(classId, { code: '1C-T' }), NotFoundError)
+      assert.strictEqual(DBMock.findById.mock.callCount(), 1)
+      assert.strictEqual(teacherService.findById.mock.callCount(), 0)
+      assert.strictEqual(DBMock.save.mock.callCount(), 0)
+  })
   })
 
   describe('removal', () => {
