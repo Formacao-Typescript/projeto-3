@@ -19,8 +19,8 @@ describe('ClassService', () => {
 
   const StudentServiceMock = (t: any, mockReturn: { listBy?: any } = {}) =>
     ({
-      listBy: t.mock.fn((_prop: string, _value: any) => mockReturn['listBy'] ?? [dummyStudent({ id: _value })])
-    } as any)
+      listBy: t.mock.fn((_prop: string, _value: any) => mockReturn['listBy'] ?? [dummyStudent({ id: randomUUID(), [_prop]: _value })])
+    } as { listBy: Mock<(_prop: string, _value: any) => Student[]> })
   // #endregion
 
   describe('creation', () => {
