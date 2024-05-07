@@ -53,6 +53,7 @@ export const dummyDatabase = <ReturnEntity extends (...args: any) => Serializabl
       (_prop: string, _value: any) => methodReturns['listBy'] ?? [entityFactory({ id: classId, [_prop]: _value })]
     ),
     remove: t.mock.fn((_id: string) => methodReturns['remove'] ?? t.mock.fn()),
-    save: t.mock.fn((_entity: ReturnType<ReturnEntity>) => methodReturns['save'] ?? dummyDatabase(t, entityFactory, methodReturns))
+    save: t.mock.fn((_entity: ReturnType<ReturnEntity>) => methodReturns['save'] ?? dummyDatabase(t, entityFactory, methodReturns)),
+    dbEntity: 'dummyEntity'
   } as any)
 
