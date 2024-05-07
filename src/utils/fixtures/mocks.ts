@@ -40,10 +40,10 @@ export const dummyStudent = (creationData?: Partial<StudentCreationType>) =>
     parents: creationData?.parents ?? [randomUUID(), randomUUID()]
   })
 
-export const dummyDatabase = <K>(
+export const dummyDatabase = <ReturnEntity>(
   t: any,
-  entityFactory: K,
-  methodReturns: { [T in keyof Omit<Database, 'dbEntity'>]?: ReturnType<Database[T]> } = {}
+  entityFactory: ReturnEntity,
+  methodReturns: { [DBKey in keyof Omit<Database, 'dbEntity'>]?: ReturnType<Database[DBKey]> } = {}
 ) =>
   ({
     findById: t.mock.fn((id: string) => methodReturns['findById'] ?? entityFactory({ id })),
@@ -52,6 +52,6 @@ export const dummyDatabase = <K>(
       (_prop: string, _value: any) => methodReturns['listBy'] ?? [entityFactory({ id: classId, [_prop]: _value })]
     ),
     remove: t.mock.fn((_id: string) => methodReturns['remove'] ?? t.mock.fn()),
-    save: t.mock.fn((_entity: Class) => methodReturns['save'] ?? dummyDatabase(t, methodReturns))
+    save: t.mock.fn((_entity: ReturnType<ReturnEntity>) => methodReturns['save'] ?? dummyDatabase(t, methodReturns))
   } as any)
 
