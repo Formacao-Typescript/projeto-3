@@ -4,6 +4,7 @@ import { StudentCreationType, Student } from '../../domain/Student.js'
 import { TeacherCreationType, Teacher } from '../../domain/Teacher.js'
 import { Database } from '../../data/Db.js'
 import { Serializable } from '../../domain/types.js'
+import type { TestContext } from 'node:test'
 
 export const teacherId = '998a702b-6123-4ae3-b0d7-9d43227f6032'
 export const classId = '95c2faa4-8951-4f7b-bdbf-45aedb060583'
@@ -42,7 +43,7 @@ export const dummyStudent = (creationData?: Partial<StudentCreationType>) =>
   })
 
 export const dummyDatabase = <ReturnEntity extends (...args: any) => Serializable>(
-  t: any,
+  t: TestContext,
   entityFactory: ReturnEntity,
   methodReturns: { [DBKey in keyof Omit<Database, 'dbEntity'>]?: ReturnType<Database[DBKey]> } = {}
 ) =>

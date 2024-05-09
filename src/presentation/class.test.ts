@@ -2,7 +2,7 @@ import axiosistCtor from 'axiosist'
 import Express from 'express'
 import assert from 'node:assert'
 import { randomUUID } from 'node:crypto'
-import { describe, it } from 'node:test'
+import { describe, it, type TestContext } from 'node:test'
 import { Class, ClassCreationType, ClassUpdateType } from '../domain/Class.js'
 import { ClassService } from '../services/ClassService.js'
 import { classId, dummyClass, dummyStudent, dummyTeacher, teacherId } from '../utils/fixtures/mocks.js'
@@ -17,7 +17,7 @@ import { MissingDependencyError } from '../domain/Errors/MissingDependency.js'
 const axiosist = axiosistCtor.default
 
 const classServiceMockFactory = (
-  t: any,
+  t: TestContext,
   methodReturns: { [T in keyof ClassService]?: ReturnType<ClassService[T]> } = {}
 ) => ({
   findById: t.mock.fn((id: string) => methodReturns['findById'] ?? dummyClass({ id })),
@@ -72,7 +72,11 @@ describe('classRouterFactory', () => {
 
       const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes/${classId}`)
       assert.strictEqual(status, 500)
-      assert.strictEqual(data.code, 'UNKNOWN_ERROR')
+      assert.strictEqual(data, {
+        message: `Class with locator "${classId}" could not be found`,
+        code: 'NOT_FOUND',
+        name: 'ClassError'
+      })
     })
   })
 

@@ -56,12 +56,10 @@ describe('zodValidationMiddleware', () => {
 
     const error = jsonMock.mock.calls[0].arguments[0]
     assert.ok(error instanceof ZodError)
+    assert.strictEqual(jsonMock.mock.callCount(), 1)
 
     assert.strictEqual(statusMock.mock.callCount(), 1)
     assert.strictEqual(statusMock.mock.calls[0].arguments[0], 422)
-
-    assert.strictEqual(jsonMock.mock.callCount(), 1)
-    assert.deepStrictEqual(jsonMock.mock.calls[0].arguments[0], error)
   })
 
   it('should call next with error on any other error', () => {
