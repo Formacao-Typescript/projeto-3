@@ -9,7 +9,7 @@
     "start": "node --env-file=.env dist/app.js",
     "dev": "tsx watch src/app.ts",
     "build": "tsc",
-    "test": "jest"
+    "test": "node --experimental-vm-modules ./node_modules/.bin/jest"
   },
   "engines": {
     "node": ">=20"
