@@ -9,6 +9,8 @@ import { Teacher } from '../domain/Teacher.js'
 import { dummyDatabase, classId, dummyClass, dummyStudent, dummyTeacher, teacherId } from '../utils/fixtures/mocks.js'
 import { ClassService } from './ClassService.js'
 import { TeacherService } from './TeacherService.js'
+import { Student } from '../domain/Student.js'
+import { StudentService } from './StudentService.js'
 
 describe('ClassService', () => {
   // #region Mocks
@@ -19,7 +21,9 @@ describe('ClassService', () => {
 
   const StudentServiceMock = (t: any, mockReturn: { listBy?: any } = {}) =>
     ({
-      listBy: t.mock.fn((_prop: string, _value: any) => mockReturn['listBy'] ?? [dummyStudent({ id: randomUUID(), [_prop]: _value })])
+      listBy: t.mock.fn(
+        (_prop: string, _value: any) => mockReturn['listBy'] ?? [dummyStudent({ id: randomUUID(), [_prop]: _value })]
+      )
     } as { listBy: Mock<(_prop: string, _value: any) => Student[]> })
   // #endregion
 
@@ -108,17 +112,21 @@ describe('ClassService', () => {
 
     it('should throw a not found error if class does not exist', (t) => {
       const DBMock = dummyDatabase(t, dummyClass, {
-          findById: false as any
+        findById: false as any
       })
       const teacherService = TeacherServiceMock(t)
       const studentService = StudentServiceMock(t)
-      const service = new ClassService(DBMock, teacherService as unknown as TeacherService, studentService as unknown as StudentService)
-      
+      const service = new ClassService(
+        DBMock,
+        teacherService as unknown as TeacherService,
+        studentService as unknown as StudentService
+      )
+
       assert.throws(() => service.update(classId, { code: '1C-T' }), NotFoundError)
       assert.strictEqual(DBMock.findById.mock.callCount(), 1)
       assert.strictEqual(teacherService.findById.mock.callCount(), 0)
       assert.strictEqual(DBMock.save.mock.callCount(), 0)
-  })
+    })
   })
 
   describe('removal', () => {

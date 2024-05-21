@@ -1,7 +1,6 @@
-import assert from 'node:assert'
 import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { afterEach, before, describe, it } from 'node:test'
+import { afterEach, beforeAll, expect, describe, it } from '@jest/globals'
 import { fileURLToPath } from 'node:url'
 import { Student } from '../domain/Student.js'
 import { unlinkIfExists } from '../utils/unlinkIfExists.js'
@@ -22,7 +21,7 @@ describe('StudentRepository', () => {
     startDate: new Date('2010-10-10').toISOString()
   })
 
-  before(() => {
+  beforeAll(() => {
     // limpa o arquivo de teste antes de começar
     // isso garante que sempre vamos ter um único registro
     unlinkIfExists(resolve(DB_PATH), DB_FILE_NAME)
@@ -36,7 +35,7 @@ describe('StudentRepository', () => {
   it('should create a new json file under .data', () => {
     void new StudentRepository()
     const dirs = readdirSync(DB_PATH)
-    assert.ok(dirs.includes(DB_FILE_NAME))
+    expect(dirs).toContain(DB_FILE_NAME)
   })
 
   it('should save a new entity in the database', () => {

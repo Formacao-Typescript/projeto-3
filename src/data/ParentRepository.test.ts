@@ -1,7 +1,6 @@
-import assert from 'node:assert'
+import { afterEach, beforeAll, describe, expect, it } from '@jest/globals'
 import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { afterEach, before, describe, it } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { Parent } from '../domain/Parent.js'
 import { unlinkIfExists } from '../utils/unlinkIfExists.js'
@@ -19,7 +18,7 @@ describe('ParentRepository', () => {
     address: [{ city: 'Foo', country: 'Bar', line1: 'Baz', zipCode: '123456', line2: 'FooBar' }]
   })
 
-  before(() => {
+  beforeAll(() => {
     // limpa o arquivo de teste antes de começar
     // isso garante que sempre vamos ter um único registro
     unlinkIfExists(resolve(DB_PATH), DB_FILE_NAME)
@@ -33,29 +32,29 @@ describe('ParentRepository', () => {
   it('should create a new json file under .data', () => {
     void new ParentRepository()
     const dirs = readdirSync(DB_PATH)
-    assert.ok(dirs.includes(DB_FILE_NAME))
+    expect(dirs).toContain(DB_FILE_NAME)
   })
 
   it('should save new entity in the database', () => {
     const db = new ParentRepository()
     const instance = db.save(parent)
-    assert.ok(instance instanceof ParentRepository)
+    expect(instance).toBeInstanceOf(ParentRepository)
     const list = JSON.parse(readFileSync(`${DB_PATH}/parent-test.json`, 'utf-8'))
-    assert.deepStrictEqual(Parent.fromObject(list[0][1]), parent)
+    expect(Parent.fromObject(list[0][1])).toStrictEqual(parent)
   })
 
   it('should list all entities in the database', () => {
     const db = new ParentRepository()
     const list = db.save(parent).list() as Parent[]
-    assert.ok(list.length === 1)
-    assert.ok(list[0] instanceof Parent)
+    expect(list.length).toBe(1)
+    expect(list[0]).toBeInstanceOf(Parent)
   })
 
   it('should find by id', () => {
     const db = new ParentRepository()
     const found = db.save(parent).findById(parent.id)
-    assert.ok(found instanceof Parent)
-    assert.deepStrictEqual(found, parent)
+    expect(found).toBeInstanceOf(Parent)
+    expect(found).toStrictEqual(parent)
   })
 
   it('should update', () => {
@@ -71,23 +70,23 @@ describe('ParentRepository', () => {
     db.save(newParent)
     newParent.firstName = 'Not Lucas'
     const updated = db.save(newParent).findById(newParent.id)
-    assert.ok(updated instanceof Parent)
-    assert.deepStrictEqual(updated, newParent)
+    expect(updated).toBeInstanceOf(Parent)
+    expect(updated).toStrictEqual(newParent)
   })
 
   it('should list by a specific property', () => {
     const db = new ParentRepository()
     const list = db.save(parent).listBy('surname', 'Santos') as Parent[]
-    assert.ok(list.length === 1)
-    assert.ok(list[0] instanceof Parent)
-    assert.deepStrictEqual(list[0], parent)
+    expect(list.length).toBe(1)
+    expect(list[0]).toBeInstanceOf(Parent)
+    expect(list[0]).toStrictEqual(parent)
   })
 
   it('should remove from the database', () => {
     const db = new ParentRepository()
     db.save(parent)
-    assert.ok(db.list().length === 1)
+    expect(db.list().length).toBe(1)
     db.remove(parent.id)
-    assert.ok(db.list().length === 0)
+    expect(db.list().length).toBe(0)
   })
 })
