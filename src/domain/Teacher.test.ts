@@ -1,7 +1,6 @@
-import { describe, it } from 'node:test'
-import assert from 'node:assert'
-import { Teacher } from './Teacher.js'
+import { describe, expect, it } from '@jest/globals'
 import { ZodError } from 'zod'
+import { Teacher } from './Teacher.js'
 
 describe('Teacher', () => {
   const teacherObj = {
@@ -17,27 +16,33 @@ describe('Teacher', () => {
 
   it('should return an instance of the entity with the correct data', () => {
     const teacher = new Teacher(teacherObj)
-    assert.ok(teacher instanceof Teacher)
+    expect(teacher).toBeInstanceOf(Teacher)
   })
   it('should return the correct data on toObject', () => {
     const teacher = new Teacher(teacherObj)
-    assert.deepStrictEqual(teacher.toObject(), { ...teacherObj, id: teacher.id })
+    expect(teacher.toObject()).toStrictEqual({
+      ...teacherObj,
+      id: teacher.id
+    })
   })
 
   it('should return the correct data on toJSON', () => {
     const teacher = new Teacher(teacherObj)
-    assert.strictEqual(teacher.toJSON(), JSON.stringify(teacher.toObject()))
+    expect(teacher.toJSON()).toStrictEqual(JSON.stringify(teacher.toObject()))
   })
 
   it('should return an instance of the entity with the correct data from fromObject', () => {
     const teacher = Teacher.fromObject(teacherObj)
-    assert.ok(teacher instanceof Teacher)
-    assert.deepStrictEqual(teacher.toObject(), { ...teacherObj, id: teacher.id })
+    expect(teacher).toBeInstanceOf(Teacher)
+    expect(teacher.toObject()).toStrictEqual({
+      ...teacherObj,
+      id: teacher.id
+    })
   })
 
   it('should return an error upon invalid data', () => {
-    assert.throws(() => {
+    expect(() => {
       new Teacher({ ...teacherObj, hiringDate: 'invalid' })
-    }, ZodError)
+    }).toThrow(ZodError)
   })
 })
