@@ -1,8 +1,7 @@
-import { describe, it, mock } from 'node:test'
+import { describe, it, expect, jest as mock } from '@jest/globals'
 import { ZodError, ZodSchema, z } from 'zod'
 import zodValidationMiddleware from './zodValidationMiddleware.js'
 import { Request, Response } from 'express'
-import assert from 'node:assert'
 
 describe('zodValidationMiddleware', () => {
   const schema = z.object({
@@ -27,10 +26,10 @@ describe('zodValidationMiddleware', () => {
     const nextMock = mock.fn()
 
     zodValidationMiddleware(schema)(req, res, nextMock)
-    assert.strictEqual(nextMock.mock.callCount(), 1)
-    assert.ok(nextMock.mock.calls[0].arguments.length === 0)
-    assert.strictEqual(statusMock.mock.callCount(), 0)
-    assert.strictEqual(jsonMock.mock.callCount(), 0)
+    expect(nextMock).toBeCalledTimes(1)
+    expect(nextMock).toBeCalledWith()
+    expect(statusMock).not.toBeCalled()
+    expect(jsonMock).not.toBeCalled()
   })
 
   it('should not call next with error on ZodError', () => {
@@ -52,14 +51,14 @@ describe('zodValidationMiddleware', () => {
 
     zodValidationMiddleware(schema)(req, res, nextMock)
 
-    assert.strictEqual(nextMock.mock.callCount(), 0)
+    expect(nextMock).not.toBeCalled()
 
-    const error = jsonMock.mock.calls[0].arguments[0]
-    assert.ok(error instanceof ZodError)
-    assert.strictEqual(jsonMock.mock.callCount(), 1)
+    const error = jsonMock.mock.calls[0][0]
+    expect(error).toBeInstanceOf(ZodError)
+    expect(jsonMock).toBeCalledTimes(1)
 
-    assert.strictEqual(statusMock.mock.callCount(), 1)
-    assert.strictEqual(statusMock.mock.calls[0].arguments[0], 422)
+    expect(statusMock).toBeCalledTimes(1)
+    expect(statusMock).toBeCalledWith(422)
   })
 
   it('should call next with error on any other error', () => {
@@ -83,10 +82,10 @@ describe('zodValidationMiddleware', () => {
 
     zodValidationMiddleware(schema)(req, res, nextMock)
 
-    assert.strictEqual(nextMock.mock.callCount(), 1)
-    assert.ok(nextMock.mock.calls[0].arguments.length === 1)
+    expect(nextMock).toBeCalledTimes(1)
+    expect(nextMock).toBeCalledWith(expect.any(Error))
 
-    assert.strictEqual(statusMock.mock.callCount(), 0)
-    assert.strictEqual(jsonMock.mock.callCount(), 0)
+    expect(statusMock).not.toBeCalled()
+    expect(jsonMock).not.toBeCalled()
   })
 })
