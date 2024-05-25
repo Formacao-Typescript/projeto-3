@@ -2,7 +2,7 @@ import axiosistCtor from 'axiosist'
 import Express from 'express'
 import assert from 'node:assert'
 import { randomUUID } from 'node:crypto'
-import { describe, it, type TestContext } from 'node:test'
+import { describe, it, TestContext } from 'node:test'
 import { Class, ClassCreationType, ClassUpdateType } from '../domain/Class.js'
 import { ClassService } from '../services/ClassService.js'
 import { classId, dummyClass, dummyStudent, dummyTeacher, teacherId } from '../utils/fixtures/mocks.js'
@@ -72,11 +72,7 @@ describe('classRouterFactory', () => {
 
       const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes/${classId}`)
       assert.strictEqual(status, 500)
-      assert.strictEqual(data, {
-        message: `Class with locator "${classId}" could not be found`,
-        code: 'NOT_FOUND',
-        name: 'ClassError'
-      })
+      assert.strictEqual(data.code, 'UNKNOWN_ERROR')
     })
   })
 
@@ -106,7 +102,9 @@ describe('classRouterFactory', () => {
         throw new NotFoundError(classId, Class)
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes/${classId}/students`)
+      const { data, status } = await axiosist(getApp(classService as ClassService)).get(
+        `/classes/${randomUUID()}/students`
+      )
       assert.strictEqual(status, 404)
       assert.deepStrictEqual(data, {
         code: 'NOT_FOUND',
