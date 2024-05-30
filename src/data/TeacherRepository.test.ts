@@ -1,7 +1,6 @@
-import assert from 'node:assert'
 import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { afterEach, before, describe, it } from 'node:test'
+import { afterEach, beforeEach, describe, it, expect } from '@jest/globals'
 import { fileURLToPath } from 'node:url'
 import { Teacher } from '../domain/Teacher.js'
 import { unlinkIfExists } from '../utils/unlinkIfExists.js'
@@ -21,7 +20,7 @@ describe('TeacherRepository', () => {
     salary: 5000
   })
 
-  before(() => {
+  beforeEach(() => {
     // limpa o arquivo de teste antes de começar
     // isso garante que sempre vamos ter um único registro
     unlinkIfExists(resolve(DB_PATH), DB_FILE_NAME)
@@ -35,30 +34,30 @@ describe('TeacherRepository', () => {
   it('should create a new json file under .data', () => {
     void new TeacherRepository()
     const dirs = readdirSync(DB_PATH)
-    assert.ok(dirs.includes(DB_FILE_NAME))
+    expect(dirs).toContain(DB_FILE_NAME)
   })
 
   it('should save a new entity in the database', () => {
     const db = new TeacherRepository()
 
     const instance = db.save(teacher)
-    assert.ok(instance instanceof TeacherRepository)
+    expect(instance).toBeInstanceOf(TeacherRepository)
     const file = JSON.parse(readFileSync(`${DB_PATH}/${DB_FILE_NAME}`, 'utf-8'))
-    assert.deepStrictEqual(Teacher.fromObject(file[0][1]), teacher)
+    expect(file[0][1]).toStrictEqual(JSON.parse(teacher.toJSON()))
   })
 
   it('should list all entities in the database', () => {
     const db = new TeacherRepository()
     const list = db.save(teacher).list() as Teacher[]
-    assert.ok(list.length === 1)
-    assert.ok(list[0] instanceof Teacher)
+    expect(list.length).toBe(1)
+    expect(list[0]).toBeInstanceOf(Teacher)
   })
 
   it('should find by id', () => {
     const db = new TeacherRepository()
     const found = db.save(teacher).findById(teacher.id)
-    assert.ok(found instanceof Teacher)
-    assert.deepStrictEqual(found, teacher)
+    expect(found).toBeInstanceOf(Teacher)
+    expect(found).toStrictEqual(teacher)
   })
 
   it('should update', () => {
@@ -75,24 +74,24 @@ describe('TeacherRepository', () => {
     })
     newTeacher.firstName = 'Not Lucas'
     const updated = db.save(newTeacher).findById(newTeacher.id)
-    assert.ok(updated instanceof Teacher)
-    assert.deepStrictEqual(updated, newTeacher)
+    expect(updated).toBeInstanceOf(Teacher)
+    expect(updated).toStrictEqual(newTeacher)
   })
 
   it('should list by a specific property', () => {
     const db = new TeacherRepository()
     const list = db.save(teacher).listBy('surname', 'Santos') as Teacher[]
-    assert.ok(list.length === 1)
-    assert.ok(list[0] instanceof Teacher)
-    assert.deepStrictEqual(list[0], teacher)
+    expect(list.length).toBe(1)
+    expect(list[0]).toBeInstanceOf(Teacher)
+    expect(list[0]).toStrictEqual(teacher)
   })
 
   it('should remove from the database', () => {
     const db = new TeacherRepository()
     db.save(teacher)
-    assert.ok(db.list().length === 1)
+    expect(db.list().length).toBe(1)
     db.remove(teacher.id)
     const list = db.list() as Teacher[]
-    assert.ok(list.length === 0)
+    expect(list.length === 0)
   })
 })

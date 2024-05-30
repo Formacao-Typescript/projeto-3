@@ -11,13 +11,14 @@ describe('StudentRepository', () => {
   const DB_PATH = resolve(dirname(fileURLToPath(import.meta.url)), '.data')
   const DB_FILE_NAME = 'student-test.json'
   const student = new Student({
+    id: 'dd5c3335-3602-436e-94a6-dbbfffd201dc',
     firstName: 'Lucas',
     surname: 'Santos',
     birthDate: new Date('1995-01-01').toISOString(),
     bloodType: 'A+',
-    class: randomUUID(),
+    class: '37f67e15-0936-4881-8f67-990aa903b527',
     document: '123456789',
-    parents: [randomUUID()],
+    parents: ['330e4e2d-2d18-4562-a61c-e06cbe4a8e8e'],
     startDate: new Date('2010-10-10').toISOString()
   })
 
@@ -42,23 +43,24 @@ describe('StudentRepository', () => {
     const db = new StudentRepository()
 
     const instance = db.save(student)
-    assert.ok(instance instanceof StudentRepository)
+    expect(instance).toBeInstanceOf(StudentRepository)
+
     const file = JSON.parse(readFileSync(`${DB_PATH}/${DB_FILE_NAME}`, 'utf-8'))
-    assert.deepStrictEqual(Student.fromObject(file[0][1]), student)
+    expect(file[0][1]).toStrictEqual(JSON.parse(student.toJSON()))
   })
 
   it('should list all entities in the database', () => {
     const db = new StudentRepository()
     const list = db.save(student).list() as Student[]
-    assert.ok(list.length === 1)
-    assert.ok(list[0] instanceof Student)
+    expect(list.length).toBe(1)
+    expect(list[0]).toBeInstanceOf(Student)
   })
 
   it('should find by id', () => {
     const db = new StudentRepository()
     const found = db.save(student).findById(student.id)
-    assert.ok(found instanceof Student)
-    assert.deepStrictEqual(found, student)
+    expect(found).toBeInstanceOf(Student)
+    expect(found).toStrictEqual(student)
   })
 
   it('should update', () => {
@@ -76,24 +78,24 @@ describe('StudentRepository', () => {
     db.save(newStudent)
     newStudent.firstName = 'Not Lucas'
     const updated = db.save(newStudent).findById(newStudent.id)
-    assert.ok(updated instanceof Student)
-    assert.deepStrictEqual(updated, newStudent)
+    expect(updated).toBeInstanceOf(Student)
+    expect(updated).toStrictEqual(newStudent)
   })
 
   it('should list by a specific property', () => {
     const db = new StudentRepository()
     const list = db.save(student).listBy('surname', 'Santos') as Student[]
-    assert.ok(list.length === 1)
-    assert.ok(list[0] instanceof Student)
-    assert.deepStrictEqual(list[0], student)
+    expect(list.length).toBe(1)
+    expect(list[0]).toBeInstanceOf(Student)
+    expect(list[0]).toStrictEqual(student)
   })
 
   it('should remove from the database', () => {
     const db = new StudentRepository()
     db.save(student)
-    assert.ok(db.list().length === 1)
+    expect(db.list().length).toBe(1)
     db.remove(student.id)
     const list = db.list() as Student[]
-    assert.ok(list.length === 0)
+    expect(list.length).toBe(0)
   })
 })

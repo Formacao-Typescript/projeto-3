@@ -69,7 +69,7 @@ describe('ClassRepository', () => {
     const entity = db.findById(classEntity.id)
     expect(entity).toBeInstanceOf(Class)
     expect(entity).toStrictEqual(classEntity)
-    expect(entity).toMatchInlineSnapshot()
+    expect(entity).toMatchInlineSnapshot(`"{"code":"1B-M","teacher":null,"id":"aab75a08-159f-4622-924d-aa12128b74bf"}"`)
     expect(entity).toMatchSnapshot()
   })
 
