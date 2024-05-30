@@ -4,10 +4,11 @@ import { StudentCreationType, Student } from '../../domain/Student.js'
 import { TeacherCreationType, Teacher } from '../../domain/Teacher.js'
 import { Database } from '../../data/Db.js'
 import { Serializable } from '../../domain/types.js'
-import type { TestContext } from 'node:test'
+import { jest } from '@jest/globals'
 
 export const teacherId = '998a702b-6123-4ae3-b0d7-9d43227f6032'
 export const classId = '95c2faa4-8951-4f7b-bdbf-45aedb060583'
+export const studentId = '430271c6-735c-46b5-8bb1-1aea803cc5d6'
 
 export const dummyClass = (creationData?: Partial<ClassCreationType>) =>
   new Class({
@@ -31,7 +32,7 @@ export const dummyTeacher = (creationData?: Partial<TeacherCreationType>) =>
 
 export const dummyStudent = (creationData?: Partial<StudentCreationType>) =>
   new Student({
-    id: creationData?.id ?? randomUUID(),
+    id: creationData?.id ?? studentId,
     birthDate: creationData?.birthDate ?? new Date('2010-10-10').toISOString(),
     class: creationData?.class ?? classId,
     document: creationData?.document ?? '12345678900',
@@ -43,18 +44,18 @@ export const dummyStudent = (creationData?: Partial<StudentCreationType>) =>
   })
 
 export const dummyDatabase = <ReturnEntity extends (...args: any) => Serializable>(
-  t: TestContext,
   entityFactory: ReturnEntity,
   methodReturns: { [DBKey in keyof Omit<Database, 'dbEntity'>]?: ReturnType<Database[DBKey]> } = {}
-) =>
-  ({
-    findById: t.mock.fn((id: string) => methodReturns['findById'] ?? entityFactory({ id })),
-    list: t.mock.fn(() => methodReturns['list'] ?? [entityFactory()]),
-    listBy: t.mock.fn(
+) => {
+  return {
+    findById: jest.fn((id: string) => methodReturns['findById'] ?? entityFactory({ id })),
+    list: jest.fn(() => methodReturns['list'] ?? [entityFactory()]),
+    listBy: jest.fn(
       (_prop: string, _value: any) => methodReturns['listBy'] ?? [entityFactory({ id: classId, [_prop]: _value })]
     ),
-    remove: t.mock.fn((_id: string) => methodReturns['remove'] ?? t.mock.fn()),
-    save: t.mock.fn((_entity: ReturnType<ReturnEntity>) => methodReturns['save'] ?? dummyDatabase(t, entityFactory, methodReturns)),
+    remove: jest.fn((_id: string) => methodReturns['remove'] ?? jest.fn()),
+    save: jest.fn((_entity: ReturnType<ReturnEntity>) => methodReturns['save'] ?? this),
     dbEntity: 'dummyEntity'
-  } as any)
+  }
+}
 
