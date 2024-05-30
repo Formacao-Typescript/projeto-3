@@ -10,6 +10,7 @@ const config: JestConfigWithTsJest = {
   coverageProvider: 'v8',
   preset: 'ts-jest/presets/default-esm',
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+  transform: {},
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1'
   },
