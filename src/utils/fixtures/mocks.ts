@@ -5,7 +5,6 @@ import { TeacherCreationType, Teacher } from '../../domain/Teacher.js'
 import { Database } from '../../data/Db.js'
 import { Serializable } from '../../domain/types.js'
 import { jest } from '@jest/globals'
-
 export const teacherId = '998a702b-6123-4ae3-b0d7-9d43227f6032'
 export const classId = '95c2faa4-8951-4f7b-bdbf-45aedb060583'
 export const studentId = '430271c6-735c-46b5-8bb1-1aea803cc5d6'
@@ -58,4 +57,3 @@ export const dummyDatabase = <ReturnEntity extends (...args: any) => Serializabl
     dbEntity: 'dummyEntity'
   }
 }
-
