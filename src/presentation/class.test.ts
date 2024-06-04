@@ -44,7 +44,10 @@ describe('classRouterFactory', () => {
     it('should return a class', async (t) => {
       const classService = classServiceMockFactory(t)
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes/${classId}`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).get(
+        `/classes/${classId}`
+      )
+
       assert.strictEqual(status, 200)
       assert.deepStrictEqual(data, dummyClass({ id: classId }).toObject())
     })
@@ -55,7 +58,9 @@ describe('classRouterFactory', () => {
         throw new NotFoundError(classId, Class)
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes/${classId}`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).get(
+        `/classes/${classId}`
+      )
       assert.strictEqual(status, 404)
       assert.deepStrictEqual(data, {
         code: 'NOT_FOUND',
@@ -70,7 +75,9 @@ describe('classRouterFactory', () => {
         throw new Error('boo')
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes/${classId}`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).get(
+        `/classes/${classId}`
+      )
       assert.strictEqual(status, 500)
       assert.strictEqual(data.code, 'UNKNOWN_ERROR')
     })
@@ -80,7 +87,9 @@ describe('classRouterFactory', () => {
     it('should return the student list', async (t) => {
       const classService = classServiceMockFactory(t)
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes/${classId}/students`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).get(
+        `/classes/${classId}/students`
+      )
       assert.strictEqual(status, 200)
       assert.ok(Array.isArray(data))
       assert.ok(data.every((student: Student) => !!student.bloodType))
@@ -90,7 +99,9 @@ describe('classRouterFactory', () => {
       const classService = classServiceMockFactory(t)
       classService.getStudents.mock.mockImplementationOnce(() => [])
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes/${classId}/students`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).get(
+        `/classes/${classId}/students`
+      )
       assert.strictEqual(status, 200)
       assert.ok(Array.isArray(data))
       assert.strictEqual(data.length, 0)
@@ -102,7 +113,7 @@ describe('classRouterFactory', () => {
         throw new NotFoundError(classId, Class)
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).get(
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).get(
         `/classes/${randomUUID()}/students`
       )
       assert.strictEqual(status, 404)
@@ -119,7 +130,9 @@ describe('classRouterFactory', () => {
         throw new Error('boo')
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes/${classId}/students`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).get(
+        `/classes/${classId}/students`
+      )
       assert.strictEqual(status, 500)
       assert.strictEqual(data.code, 'UNKNOWN_ERROR')
     })
@@ -129,7 +142,9 @@ describe('classRouterFactory', () => {
     it('should return the teacher', async (t) => {
       const classService = classServiceMockFactory(t)
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes/${classId}/teacher`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).get(
+        `/classes/${classId}/teacher`
+      )
       assert.strictEqual(status, 200)
       assert.ok(Object.keys(data).includes('major'))
     })
@@ -140,7 +155,9 @@ describe('classRouterFactory', () => {
         throw new MissingDependencyError(Teacher, classId, Class)
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes/${classId}/teacher`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).get(
+        `/classes/${classId}/teacher`
+      )
       assert.strictEqual(status, 404)
       assert.strictEqual(data.code, 'DEPENDENCY_LOCK')
     })
@@ -151,7 +168,9 @@ describe('classRouterFactory', () => {
         throw new NotFoundError(classId, Class)
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes/${classId}/teacher`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).get(
+        `/classes/${classId}/teacher`
+      )
       assert.strictEqual(status, 404)
       assert.deepStrictEqual(data, {
         code: 'NOT_FOUND',
@@ -166,7 +185,9 @@ describe('classRouterFactory', () => {
         throw new Error('boo')
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes/${classId}/teacher`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).get(
+        `/classes/${classId}/teacher`
+      )
       assert.strictEqual(status, 500)
       assert.strictEqual(data.code, 'UNKNOWN_ERROR')
     })
@@ -176,7 +197,7 @@ describe('classRouterFactory', () => {
     it('should list classes', async (t) => {
       const classService = classServiceMockFactory(t)
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).get(`/classes`)
       assert.strictEqual(status, 200)
       assert.deepStrictEqual(data, [dummyClass({ id: classId }).toObject()])
     })
@@ -185,7 +206,7 @@ describe('classRouterFactory', () => {
       const classService = classServiceMockFactory(t)
       classService.list.mock.mockImplementationOnce(() => [])
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).get(`/classes`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).get(`/classes`)
       assert.strictEqual(status, 200)
       assert.deepStrictEqual(data, [])
     })
@@ -195,7 +216,7 @@ describe('classRouterFactory', () => {
     it('should return a class', async (t) => {
       const classService = classServiceMockFactory(t)
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).post(`/classes`, {
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).post(`/classes`, {
         code: '1B-M',
         teacher: teacherId
       })
@@ -213,7 +234,7 @@ describe('classRouterFactory', () => {
         throw new Error('boo')
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).post(`/classes/`, {
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).post(`/classes/`, {
         code: '1B-M',
         teacher: null
       })
@@ -224,7 +245,7 @@ describe('classRouterFactory', () => {
     it('should 422 on validation error', async (t) => {
       const classService = classServiceMockFactory(t)
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).post(`/classes/`, {
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).post(`/classes/`, {
         code: '1B-M'
       })
       assert.strictEqual(status, 422)
@@ -237,7 +258,7 @@ describe('classRouterFactory', () => {
         throw new ConflictError(creationData.code, Class)
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).post(`/classes/`, {
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).post(`/classes/`, {
         code: '1B-M',
         teacher: null
       })
@@ -251,7 +272,7 @@ describe('classRouterFactory', () => {
         throw new NotFoundError(creationData.teacher, Teacher)
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).post(`/classes/`, {
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).post(`/classes/`, {
         code: '1B-M',
         teacher: randomUUID()
       })
@@ -264,9 +285,12 @@ describe('classRouterFactory', () => {
     it('should return a class', async (t) => {
       const classService = classServiceMockFactory(t)
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).put(`/classes/${classId}`, {
-        code: '1C-M'
-      })
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).put(
+        `/classes/${classId}`,
+        {
+          code: '1C-M'
+        }
+      )
 
       assert.strictEqual(status, 200)
       assert.ok(Object.keys(data).length === 3)
@@ -281,10 +305,13 @@ describe('classRouterFactory', () => {
         throw new Error('boo')
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).put(`/classes/${classId}`, {
-        code: '1B-M',
-        teacher: null
-      })
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).put(
+        `/classes/${classId}`,
+        {
+          code: '1B-M',
+          teacher: null
+        }
+      )
       assert.strictEqual(status, 500)
       assert.strictEqual(data.code, 'UNKNOWN_ERROR')
     })
@@ -295,10 +322,13 @@ describe('classRouterFactory', () => {
         throw new NotFoundError(creationData.teacher, Teacher)
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).put(`/classes/${classId}`, {
-        code: '1B-M',
-        teacher: randomUUID()
-      })
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).put(
+        `/classes/${classId}`,
+        {
+          code: '1B-M',
+          teacher: randomUUID()
+        }
+      )
       assert.strictEqual(status, 404)
       assert.strictEqual(data.code, 'NOT_FOUND')
     })
@@ -308,7 +338,9 @@ describe('classRouterFactory', () => {
     it('should return a class', async (t) => {
       const classService = classServiceMockFactory(t)
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).delete(`/classes/${classId}`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).delete(
+        `/classes/${classId}`
+      )
 
       assert.strictEqual(status, 204)
       assert.strictEqual(data, '')
@@ -320,7 +352,9 @@ describe('classRouterFactory', () => {
         throw new Error('boo')
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).delete(`/classes/${classId}`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).delete(
+        `/classes/${classId}`
+      )
       assert.strictEqual(status, 500)
       assert.strictEqual(data.code, 'UNKNOWN_ERROR')
     })
@@ -331,7 +365,9 @@ describe('classRouterFactory', () => {
         throw new DependencyConflictError(Student, 'something', Class)
       })
 
-      const { data, status } = await axiosist(getApp(classService as ClassService)).delete(`/classes/${classId}`)
+      const { data, status } = await axiosist(getApp(classService as unknown as ClassService)).delete(
+        `/classes/${classId}`
+      )
       assert.strictEqual(status, 403)
       assert.strictEqual(data.code, 'DEPENDENCY_LOCK')
     })
