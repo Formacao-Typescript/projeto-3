@@ -12,7 +12,9 @@ import { ClassService } from '../services/ClassService.js'
 import { classId, dummyClass, dummyStudent, dummyTeacher, studentId, teacherId } from '../utils/fixtures/mocks.js'
 import { classRouterFactory } from './class.js'
 import { errorHandler } from './middlewares/errorHandler.js'
-const axiosist = axiosistCtor.default
+import { AxiosInstance } from 'axios'
+import { RequestListener, Server } from 'http'
+const axiosist = axiosistCtor as unknown as (r: RequestListener | Server) => AxiosInstance
 
 const classServiceMockFactory = (methodReturns: { [T in keyof ClassService]?: ReturnType<ClassService[T]> } = {}) => ({
   findById: jest.fn((id: string) => methodReturns['findById'] ?? dummyClass({ id })),
