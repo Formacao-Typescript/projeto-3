@@ -1,4 +1,8 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ClassRepository > should find an entity by id 2`] = `"{"code":"1B-M","teacher":null,"id":"aab75a08-159f-4622-924d-aa12128b74bf"}"`;
+
+exports[`ClassRepository > should save a new entity in the database 2`] = `"{"code":"1B-M","teacher":null,"id":"aab75a08-159f-4622-924d-aa12128b74bf"}"`;
 
 exports[`ClassRepository should find an entity by id 2`] = `"{"code":"1B-M","teacher":null,"id":"aab75a08-159f-4622-924d-aa12128b74bf"}"`;
 

@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from '@jest/globals'
+import { describe, expect, it, vi } from 'vitest'
 import axiosistCtor from 'axiosist'
 import Express from 'express'
 import { Class, ClassCreationType, ClassUpdateType } from '../domain/Class.js'
@@ -17,13 +17,13 @@ import { RequestListener, Server } from 'http'
 const axiosist = axiosistCtor as unknown as (r: RequestListener | Server) => AxiosInstance
 
 const classServiceMockFactory = (methodReturns: { [T in keyof ClassService]?: ReturnType<ClassService[T]> } = {}) => ({
-  findById: jest.fn((id: string) => methodReturns['findById'] ?? dummyClass({ id })),
-  list: jest.fn(() => methodReturns['list'] ?? [dummyClass({ id: classId })]),
-  getTeacher: jest.fn((_classId: string) => methodReturns['getTeacher'] ?? dummyTeacher({ id: teacherId })),
-  getStudents: jest.fn((_classId: string) => methodReturns['getStudents'] ?? [dummyStudent({ id: studentId })]),
-  remove: jest.fn((_id: string) => methodReturns['remove'] ?? jest.fn()),
-  create: jest.fn((_class: ClassCreationType) => methodReturns['create'] ?? dummyClass(_class)),
-  update: jest.fn(
+  findById: vi.fn((id: string) => methodReturns['findById'] ?? dummyClass({ id })),
+  list: vi.fn(() => methodReturns['list'] ?? [dummyClass({ id: classId })]),
+  getTeacher: vi.fn((_classId: string) => methodReturns['getTeacher'] ?? dummyTeacher({ id: teacherId })),
+  getStudents: vi.fn((_classId: string) => methodReturns['getStudents'] ?? [dummyStudent({ id: studentId })]),
+  remove: vi.fn((_id: string) => methodReturns['remove'] ?? vi.fn()),
+  create: vi.fn((_class: ClassCreationType) => methodReturns['create'] ?? dummyClass(_class)),
+  update: vi.fn(
     (_id: string, _values: ClassUpdateType) => methodReturns['update'] ?? dummyClass({ ..._values, id: _id })
   )
 })

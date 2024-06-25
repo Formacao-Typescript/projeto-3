@@ -1,4 +1,4 @@
-import { describe, it, jest } from '@jest/globals'
+import { describe, it, vi, expect } from 'vitest'
 import { randomUUID } from 'node:crypto'
 import { ConflictError } from '../domain/Errors/Conflict.js'
 import { DependencyConflictError } from '../domain/Errors/DependencyConflict.js'
@@ -14,11 +14,11 @@ import { Database } from '../data/Db.js'
 describe('ClassService', () => {
   // #region Mocks
   const TeacherServiceMock = (mockReturn: { findById?: any } = {}) => ({
-    findById: jest.fn((id: string) => mockReturn['findById'] ?? dummyTeacher({ id }))
+    findById: vi.fn((id: string) => mockReturn['findById'] ?? dummyTeacher({ id }))
   })
 
   const StudentServiceMock = (mockReturn: { listBy?: any } = {}) => ({
-    listBy: jest.fn(
+    listBy: vi.fn(
       (_prop: string, _value: any) =>
         mockReturn['listBy'] ?? [dummyStudent({ id: '430271c6-735c-46b5-8bb1-1aea803cc5d6', [_prop]: _value })]
     )

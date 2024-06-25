@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { afterEach, beforeAll, expect, describe, it } from '@jest/globals'
+import { afterEach, beforeAll, expect, describe, it } from 'vitest'
 import { fileURLToPath } from 'node:url'
 import { Student } from '../domain/Student.js'
 import { unlinkIfExists } from '../utils/unlinkIfExists.js'

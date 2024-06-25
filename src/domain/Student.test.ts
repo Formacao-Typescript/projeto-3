@@ -1,4 +1,4 @@
-import { describe, it } from '@jest/globals'
+import { describe, it, expect } from 'vitest'
 import { randomUUID } from 'node:crypto'
 import { ZodError } from 'zod'
 import { Student, StudentCreationType } from './Student.js'

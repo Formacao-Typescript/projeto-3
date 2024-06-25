@@ -1,4 +1,4 @@
-import { describe, it, expect, jest as mock } from '@jest/globals'
+import { describe, it, expect, vi as mock } from 'vitest'
 import { ZodError, ZodSchema, z } from 'zod'
 import zodValidationMiddleware from './zodValidationMiddleware.js'
 import { Request, Response } from 'express'

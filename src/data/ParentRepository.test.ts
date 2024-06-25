@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, describe, expect, it } from '@jest/globals'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
