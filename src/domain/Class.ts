@@ -16,7 +16,7 @@ export class Class implements Serializable {
   code: ClassCreationType['code']
   // Uma forma mais simples de declarar acessores
   // veja Student.ts para a outra forma na propriedade parents
-  teacher: ClassCreationType['teacher']
+  accessor teacher: ClassCreationType['teacher']
   readonly id: string
 
   constructor(data: ClassCreationType) {
