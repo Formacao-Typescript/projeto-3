@@ -1,4 +1,4 @@
-import { describe, it, jest, expect, beforeAll } from '@jest/globals'
+import { describe, it, jest, expect, beforeAll, afterEach } from '@jest/globals'
 import { ClassRepository } from './ClassRepository.js'
 import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
